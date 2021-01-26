@@ -1,0 +1,147 @@
+package ua.itea.servlet;
+
+import ua.itea.web.EmailValidator;
+import ua.itea.web.PasswordValidator;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+//import java.util.Enumeration;
+
+public class RegistrationServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        /*
+        Enumeration<String> names = req.getSession().getAttributeNames();
+        while (names.hasMoreElements()) {
+            String param = names.nextElement();
+            System.out.println(param + " " + req.getSession().getAttribute(param));
+        }
+        */
+
+        if (req.getSession().getAttribute("regCounter") == null) {
+            req.getSession().setAttribute("regCounter", 0);
+        }
+        int regCounter = Integer.parseInt(req.getSession().getAttribute("regCounter").toString());
+
+        if (regCounter >= 3) {
+            req.getSession().setAttribute("isShowAntiBotForm", "true");
+
+            if (req.getParameter("letters") != null) {
+                if (req.getSession().getAttribute("generatedLetter").toString().replaceAll(" ", "")
+                        .equals(req.getParameter("letters").replaceAll(" ", ""))) {
+
+                    req.getSession().setAttribute("registrationResult", "Registration successfull");
+                    req.getSession().setAttribute("regCounter", 0);
+                    req.getSession().setAttribute("isShowAntiBotForm", null);
+
+                    resp.sendRedirect("/logout.jsp");
+                    return;
+                }
+            }
+
+            char[] array = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < 6; i++) {
+                int j = (int) (Math.random() * 26);
+                char s = (j > 20) ? array[j] : Character.toUpperCase(array[j]);
+                sb.append(s + " ");
+            }
+            req.getSession().setAttribute("generatedLetter", sb.toString());
+        }
+        resp.sendRedirect("/registration.jsp");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        /*
+        Enumeration<String> names = req.getSession().getAttributeNames();
+        while (names.hasMoreElements()) {
+            String param = names.nextElement();
+            System.out.println(param + " " + req.getSession().getAttribute(param));
+        }
+        */
+
+        req.getSession().setAttribute("name", req.getParameter("name"));
+        req.getSession().setAttribute("login", req.getParameter("login"));
+        req.getSession().setAttribute("password", req.getParameter("password"));
+        req.getSession().setAttribute("retypepassword", req.getParameter("retypepassword"));
+        req.getSession().setAttribute("address", req.getParameter("address"));
+        req.getSession().setAttribute("sex", req.getParameter("sex"));
+        req.getSession().setAttribute("comment", req.getParameter("comment"));
+        req.getSession().setAttribute("agree", req.getParameter("agree"));
+        req.getSession().setAttribute("sendLetters", req.getParameter("letters"));
+        req.getSession().setAttribute("registrationResult", "");
+
+        StringBuilder errorMessage = new StringBuilder();
+        boolean error = false;
+
+        PasswordValidator passwordValidator = new PasswordValidator();
+        EmailValidator emailValidator = new EmailValidator();
+
+        if (req.getSession().getAttribute("name") != null) {
+            errorMessage.append("<ul>");
+
+            if (req.getSession().getAttribute("name").toString().isEmpty()) {
+                error = true;
+                errorMessage.append("<li>Name field is empty</li>");
+            }
+
+            if (req.getSession().getAttribute("login").toString().isEmpty()) {
+                error = true;
+                errorMessage.append("<li>Login field is empty</li>");
+            } else if (!emailValidator.isValid(req.getSession().getAttribute("login").toString())) {
+                error = true;
+                errorMessage.append("<li>Entered incorrect login!");
+            }
+
+            if (req.getSession().getAttribute("password").toString().isEmpty()) {
+                error = true;
+                errorMessage.append("<li>Password field is empty</li>");
+
+            } else if (!passwordValidator.isValid(req.getSession().getAttribute("password").toString())) {
+                error = true;
+                errorMessage.append("<li>Entered incorrect password! It must contains at least 1 digit, 1 lowercase, 1 uppercase & special character, mim 8 & max 20 characters</li>");
+            }
+
+            if (!req.getSession().getAttribute("password").toString().equals(req.getSession().getAttribute("retypepassword").toString())) {
+                error = true;
+                errorMessage.append("<li>Retype password error</li>");
+            }
+
+            if (req.getSession().getAttribute("address").toString().isEmpty()) {
+                error = true;
+                errorMessage.append("<li>Address field is empty</li>");
+            }
+
+            if (req.getParameter("agree") == null) {
+                error = true;
+                errorMessage.append("<li>Agree field is empty</li>");
+            }
+
+            errorMessage.append("<ul>");
+            req.getSession().setAttribute("errorMessage", errorMessage.toString());
+
+            if (!error) {
+
+                if (req.getSession().getAttribute("regCounter") == null) {
+                    req.getSession().setAttribute("regCounter", 0);
+                }
+
+                int regCounter = Integer.parseInt(req.getSession().getAttribute("regCounter").toString());
+                req.getSession().setAttribute("regCounter", ++regCounter);
+
+                if (regCounter < 3) {
+                    req.getSession().setAttribute("registrationResult", "Registration successfull");
+                    resp.sendRedirect("/logout.jsp");
+                    return;
+                }
+            }
+        }
+        doGet(req, resp);
+    }
+}

@@ -1,0 +1,108 @@
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page isELIgnored = "false" %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Photoshoot by FCT</title>
+    <link href="./css/style.css" rel="stylesheet" type="text/css" media="screen" />
+    <script type="text/javascript" src="./js/jquery.js"></script>
+    <script type="text/javascript" src="./js/jquery.poptrox-0.1.js"></script>
+</head>
+<body>
+<div id="header" class="container">
+    <div id="logo">
+        <h1><a href="#">YABLOCHKI</a></h1>
+    </div>
+    <div id="menu">
+        <ul>
+            <li class="current_page_item"><a href="./index.jsp">Главная</a></li>
+            <li><a href="./products">Товары</a></li>
+            <c:if test="${empty sessionScope.user}">
+                <li><a href="./registration">Регистрация</a></li>
+                <li><a href="./login">Вход</a></li>
+            </c:if>
+            <c:if test="${not empty sessionScope.user}">
+                <label>${user.name}</label>
+                <form action="./login" method="post">
+                    <input type="hidden" name="logout"/>
+                    <input type="submit" value="logout"/>
+                </form>
+            </c:if>
+            <li><a href="./cart">Корзина</a></li>
+        </ul>
+    </div>
+</div>
+<!-- end #header -->
+<div id="poptrox">
+    <!-- start -->
+    <ul id="gallery">
+        <li><a href="./images/img01_big.jpg"><img src="./images/img01.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img02_big.jpg"><img src="./images/img02.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img03_big.jpg"><img src="./images/img03.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img04_big.jpg"><img src="./images/img04.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img02_big.jpg"><img src="./images/img02.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img01_big.jpg"><img src="./images/img01.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img04_big.jpg"><img src="./images/img04.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+        <li><a href="./images/img03_big.jpg"><img src="./images/img03.jpg" title="Phasellus nec erat sit amet nibh pellentesque congue." alt="" /></a></li>
+    </ul>
+    <br class="clear" />
+    <script type="text/javascript">
+        $('#gallery').poptrox();
+        </script>
+    <!-- end -->
+</div>
+<div id="page">
+    <div id="bg1">
+        <div id="bg2">
+            <div id="bg3">
+<div id="content">
+    <h2>Добро пожаловать в магазин !!!</h2>
+    <p> Наши профессиональные менеджеры помогут быстро и качественно подобрать нужный Вам товар. Звоните круглосуточно!
+        Втюхаем все!</p>
+    <p>К сожалению, Вы можете наткнуться на схожий дизайн в интернете - это все потому,что автор лентяй и двоечник и не
+        знает, как поменять шаблон.</p>
+    <p>Надеемся, что это не скажется на Вашей покупательной способности.</p>
+</div>
+
+                <div id="sidebar">
+                    <table border=1>
+                        <tr>
+                            <td width="252" align="left">
+
+                                <font color=white>
+                                    Вы авторизировались как
+                                    <c:if test="${empty sessionScope.user}">Guest</c:if>
+                                    <br/>
+                                    <c:if test="${not empty sessionScope.user}">${sessionScope.user.name}</c:if>
+                                    В вашей корзине <span id="prodCount">${sessionScope.count}</span> товаров.
+                                </font>
+                            </td>
+                        </tr>
+                    </table>
+                    <h2>Боковое меню</h2>
+                    <ul>
+                        <c:forEach var="category" items="${categories}">
+                            <li><a href="./products?category=${category.id}">${category.name}</a></li>
+                        </c:forEach>
+                        <c:if test="${empty sessionScope.user}">
+                            <li><a href="./registration">Регистрация</a></li>
+                            <li><a href="./login">Вход</a></li>
+                        </c:if>
+                        <br/>
+                        <li><a href="./cart">Корзина</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <p>Copyright (c) by Бондаренко Антон</p>
+</div>
+<!-- end #footer -->
+</body>
+
